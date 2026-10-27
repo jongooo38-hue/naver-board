@@ -5,10 +5,12 @@
 import json
 import re
 import urllib.request
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 KRX_URL = "https://kind.krx.co.kr/corpgeneral/corpList.do?method=download&searchType=13"
 MARKET = {"유가": "코스피", "코스닥": "코스닥", "코넥스": "코넥스"}
+KST = timezone(timedelta(hours=9))
 HERE = Path(__file__).parent
 
 
@@ -28,7 +30,9 @@ def fetch_stocks():
 def main():
     stocks = fetch_stocks()
     data = json.dumps(stocks, ensure_ascii=False, separators=(",", ":"))
-    html = (HERE / "template.html").read_text(encoding="utf-8").replace("/*STOCKS*/[]", data)
+    updated = datetime.now(KST).strftime("%Y-%m-%d %H:%M")
+    html = (HERE / "template.html").read_text(encoding="utf-8")
+    html = html.replace("/*STOCKS*/[]", data).replace('/*UPDATED*/""', json.dumps(updated))
     (HERE / "index.html").write_text(html, encoding="utf-8")
     print(f"index.html 생성: {len(stocks)}종목")
 
