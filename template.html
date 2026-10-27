@@ -147,12 +147,12 @@ $list.addEventListener("click", e => { const li = e.target.closest("li"); if (li
 // 최근 본 종목 (이 기기에만 저장)
 function loadRecent() { try { return JSON.parse(localStorage.getItem("recent") || "[]"); } catch { return []; } }
 function saveRecent(code) {
-  const r = [code, ...loadRecent().filter(c => c !== code)].slice(0, 12);
+  const r = [code, ...loadRecent().filter(c => c !== code)].slice(0, 10);
   try { localStorage.setItem("recent", JSON.stringify(r)); } catch {}
   setTimeout(drawRecent);  // 클릭한 링크가 이동하기 전에 지워지지 않도록
 }
 function drawRecent() {
-  const r = loadRecent().map(c => byCode[c]).filter(Boolean);
+  const r = loadRecent().map(c => byCode[c]).filter(Boolean).slice(0, 10);
   document.getElementById("recentBox").hidden = !r.length;
   document.getElementById("recent").innerHTML = r.map(it =>
     `<a href="${url(it.code)}" ${isMobile ? "" : 'target="_blank"'} data-code="${it.code}">${it.name}</a>`).join("");
